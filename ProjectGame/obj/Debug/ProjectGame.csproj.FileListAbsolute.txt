@@ -1,0 +1,9 @@
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\ProjectGame.exe.config
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\ProjectGame.exe
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\ProjectGame.pdb
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.csproj.AssemblyReference.cache
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.Properties.Resources.resources
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.csproj.GenerateResource.cache
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.csproj.CoreCompileInputs.cache
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.exe
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.pdb

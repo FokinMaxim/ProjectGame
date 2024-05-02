@@ -7,3 +7,4 @@ C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.csproj
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.csproj.CoreCompileInputs.cache
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.exe
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.pdb
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\greenCell.png

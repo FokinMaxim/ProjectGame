@@ -12,13 +12,14 @@ namespace ProjectGame
 {
     public partial class Form1 : Form
     {
+        
         public Form1()
         {
         }
         protected override void OnPaint(PaintEventArgs e)
         {
             var Map = new Map(3, "C:\\Users\\User\\RiderProjects\\ProjectGame\\ProjectGame\\images\\greenCell.png");
-            View.PaintMap(Map);
+            View.PaintMap(Map, e);
         }
 
     }

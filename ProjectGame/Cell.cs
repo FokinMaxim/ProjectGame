@@ -1,17 +1,30 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace ProjectGame
-{// Класс для клетки, из которой будет состоять карта.
+{
     public class Cell
     {
-        public string ImageName;
+        public PictureBox Sprite;
         public Entity Entity;
-        public int X;
-        public int Y;
+        public Point WindowPosition;
+        public Size ImageSize;
+        public Point MapPosition;
 
-        public Cell(int x, int y, string img)
+        public Cell(int x, int y, Image img, Point mapPosition)
         {
-            X = x;
-            Y = y;
-            ImageName = img;
+            WindowPosition = new Point(x, y);
+            MapPosition = mapPosition;
+            Sprite = new PictureBox(){Image = img};
+            Sprite.Location = WindowPosition;
+            ImageSize = Sprite.Size;
+            Sprite.Click += CheckClicability;
+        }
+
+        private void CheckClicability(object sender, EventArgs e)
+        {
+            Console.WriteLine("asasas");
         }
     }
 }

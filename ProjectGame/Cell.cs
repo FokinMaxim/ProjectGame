@@ -1,30 +1,47 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Net.Mime;
 using System.Windows.Forms;
 
 namespace ProjectGame
 {
     public class Cell
     {
-        public PictureBox Sprite;
+        public PictureBox Box;
+        public Image Image;
         public Entity Entity;
         public Point WindowPosition;
-        public Size ImageSize;
         public Point MapPosition;
 
         public Cell(int x, int y, Image img, Point mapPosition)
         {
             WindowPosition = new Point(x, y);
             MapPosition = mapPosition;
-            Sprite = new PictureBox(){Image = img};
-            Sprite.Location = WindowPosition;
-            ImageSize = Sprite.Size;
-            Sprite.Click += CheckClicability;
+            Image = img;
+            Box = new PictureBox()
+            {
+                Location = WindowPosition,
+                Size = new Size(130, 130), // Эту проблему я не преодолел. По какой-то причине,
+                                           // img.Size возвращает (100, 100), а рисует как (130, 130)
+                BackColor = Color.Transparent
+                // Picturebox всех клеток прозрачные, чтобы они просто находились поверх клеток и принимали информацию,
+                // а изображение за ней будет перерисовываться каждый раз после изменения системы
+            };
+            Box.Click += CheckClicability;
+            Box.Paint += PaintBox;
         }
 
         private void CheckClicability(object sender, EventArgs e)
         {
-            Console.WriteLine("asasas");
+            Console.WriteLine(MapPosition);
+            Controle.RecieveSignal(this);
+        }
+
+        private void PaintBox(object sender, PaintEventArgs e)
+        {
+            e.Graphics.DrawImage(Image, WindowPosition);
+            if (Entity != null) e.Graphics.DrawImage(Entity.Sprite, WindowPosition);
         }
     }
 }

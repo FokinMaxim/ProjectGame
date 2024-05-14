@@ -24,18 +24,33 @@ namespace ProjectGame
             }
         }
 
-        public static void RedrawCell(Cell[] cells, PaintEventArgs e)
+        public static void RedrawCell(Cell[] cells)
         {
             foreach (var cell in cells)
             {
-                PaintCell(cell, e);
+                var gr = cell.Box.CreateGraphics();
+                gr.DrawImage(cell.Image, cell.WindowPosition);
+                if (cell.Entity != null)// На моменте отрисови произходит проблема
+                {
+                    var delta = (cell.Image.Size.Height -  cell.Entity.Sprite.Size.Height)/2;
+                    
+                    gr.DrawImage(cell.Entity.Sprite, new Point(
+                        cell.WindowPosition.X + delta, 
+                        cell.WindowPosition.Y + delta));
+                }
             }
         }
 
         public static void PaintCell(Cell cell, PaintEventArgs e)
         {
-            e.Graphics.DrawImage(cell.Sprite.Image, cell.WindowPosition);
-            if (cell.Entity != null) e.Graphics.DrawImage(cell.Entity.Sprite, cell.WindowPosition);
+            e.Graphics.DrawImage(cell.Image, cell.WindowPosition);
+            if (cell.Entity != null)
+            {
+                var delta = (cell.Image.Size.Height -  cell.Entity.Sprite.Size.Height)/2;
+                e.Graphics.DrawImage(cell.Entity.Sprite, new Point(
+                    cell.WindowPosition.X + delta, 
+                    cell.WindowPosition.Y + delta));
+            }
         }
     }
 }

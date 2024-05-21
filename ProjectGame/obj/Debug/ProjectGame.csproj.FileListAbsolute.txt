@@ -9,3 +9,5 @@ C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.exe
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\obj\Debug\ProjectGame.pdb
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\greenCell.png
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\knight.png
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\skeleton.png
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\knightChosen.png

@@ -11,15 +11,15 @@ namespace ProjectGame
         {
             if (newChosenElement is Cell)
             {
-                if (ChosenElement == null || !(ChosenElement is Cell)) ChosenElement = newChosenElement;
-                else
+                var GoTo = (Cell)newChosenElement;
+                if (ChosenElement != null && ChosenElement is Cell)
                 {
                     var GoFrom = (Cell)ChosenElement;
-                    var GoTo = (Cell)newChosenElement;
-                    ChosenElement = null;
                     Map.Move(GoFrom, GoTo);
-                    View.RedrawCell(new []{GoTo, GoFrom});
+                    GoFrom.UnSetChosen();
                 }
+                ChosenElement = newChosenElement;
+                GoTo.SetChosen();
             }
         }
     }

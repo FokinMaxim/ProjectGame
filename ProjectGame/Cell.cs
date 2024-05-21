@@ -32,6 +32,18 @@ namespace ProjectGame
             Box.Paint += PaintBox;
         }
 
+        public void SetChosen()
+        {
+            if (Entity != null) Entity.SetChosen();
+            View.RedrawCell(new []{this});
+        }
+        
+        public void UnSetChosen()
+        {
+            if (Entity != null) Entity.UnSetChosen();
+            View.RedrawCell(new []{this});
+        }
+        
         private void CheckClicability(object sender, EventArgs e)
         {
             Console.WriteLine(MapPosition);

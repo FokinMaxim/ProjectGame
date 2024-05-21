@@ -10,11 +10,12 @@ namespace ProjectGame
 {
     public class Map
     {
-        public Cell[,] Matrix;
-        public int Size;
+        private Cell[,] matrix;
+        public readonly int Size;
+        private List<Entity> entityList;
         public Map(int size, string img, Control.ControlCollection Controls)
         {
-            Matrix = new Cell[size, size];
+            matrix = new Cell[size, size];
             Size = size;
             var dy = 0;
             var dx = 0; 
@@ -24,7 +25,7 @@ namespace ProjectGame
                 {
                     //var cell = new Cell(i * 130 + dx, dy, Image.FromFile(img), new Point(i, j));
                     var cell = new Cell(i * 130 + dx, dy, Image.FromFile(img), new Point(i, j));
-                    Matrix[i, j] = cell;
+                    matrix[i, j] = cell;
                     Controls.Add(cell.Box);
                 }
                 if (j % 2 == 0) dx += 65;
@@ -35,24 +36,35 @@ namespace ProjectGame
 
         public Cell this[int x, int y]
         {
-            get => Matrix[x, y];
+            get => matrix[x, y];
             
-            set { Matrix[x, y] = value; }
+            set { matrix[x, y] = value; }
         }
 
-        private readonly Point[] AdjacenceTemplate = 
+        private readonly Point[] OddAdjacenceTemplate = 
         {
             new Point(1, 0), new Point(0, 1), new Point(1, 1),
             new Point(-1, 0), new Point(0, -1), new Point(1, -1),
         };
+        
+        private readonly Point[] EvenAdjacenceTemplate = 
+        {
+            new Point(1, 0), new Point(0, 1), new Point(-1, -1),
+            new Point(-1, 0), new Point(0, -1), new Point(-1, 1),
+        };
         public IEnumerable<Cell> GetAdjacentToCell(Cell cell)
         {
+            var template = new Point[] { };
             var pos = cell.MapPosition;
-            foreach (var delta in AdjacenceTemplate)
+            if (cell.MapPosition.Y % 2 == 0)
+                template = EvenAdjacenceTemplate;
+            else
+                template = OddAdjacenceTemplate;
+            foreach (var delta in template)
             {
                 var dx = pos.X + delta.X;
                 var dy = pos.Y + delta.Y;
-                if (InBounds(new Point(dx, dy))) yield return Matrix[dx, dy];
+                if (InBounds(new Point(dx, dy))) yield return matrix[dx, dy];
             }
         }
 
@@ -65,6 +77,7 @@ namespace ProjectGame
                 Dealer.Entity.KillCount++;
                 Reciwer.Entity = null;
             }
+            else Reciwer.Entity.HealthPoints -= Dealer.Entity.Attack;
         }
 
         public void Move(Cell From, Cell To)
@@ -78,8 +91,8 @@ namespace ProjectGame
                 To.Entity = From.Entity;
                 From.Entity = null;
             }
-            if(From.Entity != null)Console.WriteLine("From:" + From.Entity.Name);
-            if(To.Entity != null)Console.WriteLine("To:" +To.Entity.Name);
+            if(From.Entity != null)Console.WriteLine("From:" + From.Entity.FileName);
+            if(To.Entity != null)Console.WriteLine("To:" +To.Entity.FileName);
         }
 
         public void SpawnEntity((Entity, Point)[] entityPositions)
@@ -88,7 +101,7 @@ namespace ProjectGame
             {
                 if (!InBounds(entity.Item2)) throw new ArgumentException();
 
-                Matrix[entity.Item2.X, entity.Item2.Y].Entity = entity.Item1;
+                matrix[entity.Item2.X, entity.Item2.Y].Entity = entity.Item1;
             }
         }
 

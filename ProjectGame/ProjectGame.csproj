@@ -55,6 +55,7 @@
         <Compile Include="Form1.Designer.cs">
             <DependentUpon>Form1.cs</DependentUpon>
         </Compile>
+        <Compile Include="Game.cs" />
         <Compile Include="Map.cs" />
         <Compile Include="Program.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
@@ -86,6 +87,12 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="images\knight.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="images\knightChosen.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="images\skeleton.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

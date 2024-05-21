@@ -15,21 +15,29 @@ namespace ProjectGame
         private Map Map;
         public Form1()
         {
+            //MaximizeBox = false;
+            WindowState = FormWindowState.Maximized;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Map = new Map(3, "images\\greenCell.png", Controls);
             Controle.Map = Map;
             
-            var Knight1 = new Entity(2, 1, Image.FromFile("images\\knight.png"), "First");
-            //var Knight2 = new Entity(1, 1, Image.FromFile("images\\knight.png"), "Second");
-            Map.SpawnEntity(new []{(Knight1, new Point(1, 1)),});
+            var knight1 = new Entity(4, 2, "knight");
+            var skeleton = new Entity(4, 1, "skeleton");
+            Map.SpawnEntity(new []
+            {
+                (knight1, new Point(1, 1)),
+                (skeleton, new Point(0, 0))
+            });
         }
-        
         
         protected override void OnPaint(PaintEventArgs e)
         {
             View.PaintMap(Map, e);
         }
-        
+
+        public void ClickOnMap()
+        {
+            
+        }
     }
-    
-    
 }

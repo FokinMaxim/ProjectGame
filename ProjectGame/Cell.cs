@@ -35,13 +35,11 @@ namespace ProjectGame
         public void SetChosen()
         {
             if (Entity != null) Entity.SetChosen();
-            View.RedrawCell(new []{this});
         }
         
         public void UnSetChosen()
         {
             if (Entity != null) Entity.UnSetChosen();
-            View.RedrawCell(new []{this});
         }
         
         private void CheckClicability(object sender, EventArgs e)
@@ -49,8 +47,8 @@ namespace ProjectGame
             Console.WriteLine(MapPosition);
             
             Form myForm = Box.FindForm();
-            if (myForm is Form1) ((Form1)myForm).WWWAAAGH(e);
-            Controle.RecieveSignal(this);
+            if (myForm is Form1) ((Form1)myForm).WWWAAAGH(this);
+            //Controle.RecieveSignal(this);
         }
 
         private void PaintBox(object sender, PaintEventArgs e)

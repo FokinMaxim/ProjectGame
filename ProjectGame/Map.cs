@@ -110,5 +110,13 @@ namespace ProjectGame
         {
             return ((point.Y < Size && point.Y >= 0) && (point.X < Size && point.X >= 0));
         }
+
+        public IEnumerable<Cell> GetCells()
+        {
+            foreach (var cell in matrix)
+            {
+                yield return cell;
+            }
+        }
     }
 }

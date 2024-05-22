@@ -4,9 +4,9 @@ using static System.Math;
 
 namespace ProjectGame
 {
-    public static class View
+    public class View
     {
-        public static void PaintMap(Map map, PaintEventArgs e)
+        public  void PaintMap(Map map, PaintEventArgs e)
         {
             var dy = 0;
             var dx = 0; 
@@ -24,7 +24,7 @@ namespace ProjectGame
             }
         }
 
-        public static void RedrawCell(Cell[] cells)
+        public  void RedrawCell(Cell[] cells)
         {
             foreach (var cell in cells)
             {
@@ -42,7 +42,7 @@ namespace ProjectGame
             }
         }
 
-        public static void PaintCell(Cell cell, PaintEventArgs e)
+        public  void PaintCell(Cell cell, PaintEventArgs e)
         {
             e.Graphics.DrawImage(cell.Image, cell.WindowPosition);
             if (cell.Entity != null)

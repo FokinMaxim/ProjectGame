@@ -12,31 +12,24 @@ namespace ProjectGame
 {
     public partial class Form1 : Form
     {
-        private Map Map;
+        private Game game;
         public Form1()
         {
-            //MaximizeBox = false;
-            //WindowState = FormWindowState.Maximized;
-            //FormBorderStyle = FormBorderStyle.FixedSingle;
-            Map = new Map(3, "images\\greenCell.png", Controls);
-            Controle.Map = Map;
-            
-            var knight1 = new Entity(4, 2, "knight");
-            var skeleton = new Entity(4, 1, "skeleton");
-            Map.SpawnEntity(new []
-            {
-                (knight1, new Point(1, 1)),
-                (skeleton, new Point(0, 0))
-            });
+             MaximizeBox = false;
+             WindowState = FormWindowState.Maximized;
+             //Size = new Size(10000, 10000);
+             FormBorderStyle = FormBorderStyle.FixedSingle;
+            game = new Game(Controls);
         }
 
-        public void WWWAAAGH(EventArgs e)
+        public void WWWAAAGH(object newChosenElement)
         {
-            Console.WriteLine("eee");
+            game.SetNewChosenElement(newChosenElement);
+            
         }
         protected override void OnPaint(PaintEventArgs e)
         {
-            View.PaintMap(Map, e);
+            game.PaintMap(e);
         }
     }
 }

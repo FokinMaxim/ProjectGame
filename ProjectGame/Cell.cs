@@ -10,7 +10,7 @@ namespace ProjectGame
     {
         public PictureBox Box;
         public Image Image;
-        public Entity Entity;
+        public IEntity Entity;
         public Point WindowPosition;
         public Point MapPosition;
 
@@ -22,26 +22,20 @@ namespace ProjectGame
             Box = new PictureBox()
             {
                 Location = WindowPosition,
-                Size = new Size(130, 130), // Эту проблему я не преодолел. По какой-то причине,
-                                           // img.Size возвращает (100, 100), а рисует как (130, 130)
+                Size = new Size(130, 130), 
                 BackColor = Color.Transparent
-                // Picturebox всех клеток прозрачные, чтобы они просто находились поверх клеток и принимали информацию,
-                // а изображение за ней будет перерисовываться каждый раз после изменения системы
             };
             Box.Click += CheckClicability;
-            Box.Paint += PaintBox;
         }
 
         public void SetChosen()
         {
             if (Entity != null) Entity.SetChosen();
-            View.RedrawCell(new []{this});
         }
         
         public void UnSetChosen()
         {
             if (Entity != null) Entity.UnSetChosen();
-            View.RedrawCell(new []{this});
         }
         
         private void CheckClicability(object sender, EventArgs e)
@@ -49,14 +43,8 @@ namespace ProjectGame
             Console.WriteLine(MapPosition);
             
             Form myForm = Box.FindForm();
-            if (myForm is Form1) ((Form1)myForm).WWWAAAGH(e);
-            Controle.RecieveSignal(this);
+            if (myForm is Form1) ((Form1)myForm).WWWAAAGH(this);
         }
-
-        private void PaintBox(object sender, PaintEventArgs e)
-        {
-            e.Graphics.DrawImage(Image, WindowPosition);
-            if (Entity != null) e.Graphics.DrawImage(Entity.Sprite, WindowPosition);
-        }
+        
     }
 }

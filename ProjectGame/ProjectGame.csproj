@@ -47,7 +47,6 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Cell.cs" />
-        <Compile Include="Controle.cs" />
         <Compile Include="Entity.cs" />
         <Compile Include="Form1.cs">
             <SubType>Form</SubType>
@@ -56,6 +55,8 @@
             <DependentUpon>Form1.cs</DependentUpon>
         </Compile>
         <Compile Include="Game.cs" />
+        <Compile Include="IEntity.cs" />
+        <Compile Include="InfoPanel.cs" />
         <Compile Include="Map.cs" />
         <Compile Include="Program.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
@@ -83,6 +84,12 @@
         <None Include="App.config"/>
     </ItemGroup>
     <ItemGroup>
+      <Content Include="fonts\Grandstander-Light.ttf" />
+      <Content Include="fonts\Grandstander.ttf" />
+      <Content Include="fonts\GrandstanderNarrow.ttf" />
+      <Content Include="images\endTurnButton.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="images\greenCell.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>

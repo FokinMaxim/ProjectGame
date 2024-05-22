@@ -4,9 +4,9 @@ using static System.Math;
 
 namespace ProjectGame
 {
-    public static class View
+    public class View
     {
-        public static void PaintMap(Map map, PaintEventArgs e)
+        public  void PaintMap(Map map, PaintEventArgs e)
         {
             var dy = 0;
             var dx = 0; 
@@ -15,7 +15,7 @@ namespace ProjectGame
                for (var i = 0; i < map.Size; i++)
                {
                    var cell = map[i, j];
-                   PaintCell(cell, e);
+                   PaintCell(cell, e.Graphics);
                    //e.Graphics.DrawImage(cell.Sprite.Image, new Point(i * (130) + dx, dy));
                }
                if (j % 2 == 0) dx += 65;
@@ -24,34 +24,44 @@ namespace ProjectGame
             }
         }
 
-        public static void RedrawCell(Cell[] cells)
+        public  void RedrawCell(Cell[] cells)
         {
+            var myForm = cells[0].Box.FindForm();
+            var formgraf = myForm.CreateGraphics();
             foreach (var cell in cells)
             {
                 var gr = cell.Box.CreateGraphics();
                 gr.DrawImage(cell.Image, new Point(0, 0));
-                if (cell.Entity != null)// На моменте отрисови произходит проблема
-                {
-                    var delta = (cell.Image.Size.Height -  cell.Entity.Sprite.Size.Height)/2;
-                    gr.DrawImage(cell.Entity.Sprite, new Point(delta, delta));
-                    //gr.DrawString(cell.Entity.HealthPoints.ToString(),
-                        //new Font(), new SolidBrush(Color.Red), new PointF(
-                            //(float)delta + cell.Entity.Sprite.Size.Height,
-                            //(float)delta + cell.Entity.Sprite.Size.Width));
-                }
+               if (cell.Entity != null)
+               { 
+                   var delta = (cell.Image.Size.Height -  cell.Entity.Sprite.Size.Height)/2;
+                   DrawEntity(gr,cell, new Point(delta, delta)); 
+               }
             }
         }
 
-        public static void PaintCell(Cell cell, PaintEventArgs e)
+        public  void PaintCell(Cell cell, Graphics gr)
         {
-            e.Graphics.DrawImage(cell.Image, cell.WindowPosition);
+            gr.DrawImage(cell.Image, cell.WindowPosition);
             if (cell.Entity != null)
             {
                 var delta = (cell.Image.Size.Height -  cell.Entity.Sprite.Size.Height)/2;
-                e.Graphics.DrawImage(cell.Entity.Sprite, new Point(
-                    cell.WindowPosition.X + delta, 
-                    cell.WindowPosition.Y + delta));
+                DrawEntity(gr, cell, new Point(cell.WindowPosition.X + delta, cell.WindowPosition.Y + delta));
+                //gr.DrawImage(cell.Entity.Sprite, new Point(cell.WindowPosition.X + delta, cell.WindowPosition.Y + delta));
             }
+        }
+
+        public void DrawEntity(Graphics gr, Cell cell, Point delta)
+        {
+            gr.DrawImage(cell.Entity.Sprite, new Point(delta.X, delta.Y));
+            
+            var fontFamily = new FontFamily("Arial");
+            var font = new Font(fontFamily, 28, FontStyle.Bold, GraphicsUnit.Pixel);
+            
+            gr.DrawString(cell.Entity.HealthPoints.ToString(), 
+                font, new SolidBrush(Color.Red), new PointF(
+                    (float)delta.X + cell.Entity.Sprite.Size.Height, 
+                    (float)delta.Y + cell.Entity.Sprite.Size.Width));
         }
     }
 }

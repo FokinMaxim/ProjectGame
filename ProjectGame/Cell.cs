@@ -47,6 +47,9 @@ namespace ProjectGame
         private void CheckClicability(object sender, EventArgs e)
         {
             Console.WriteLine(MapPosition);
+            
+            Form myForm = Box.FindForm();
+            if (myForm is Form1) ((Form1)myForm).WWWAAAGH(e);
             Controle.RecieveSignal(this);
         }
 

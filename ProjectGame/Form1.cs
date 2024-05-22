@@ -16,8 +16,8 @@ namespace ProjectGame
         public Form1()
         {
             //MaximizeBox = false;
-            WindowState = FormWindowState.Maximized;
-            FormBorderStyle = FormBorderStyle.FixedSingle;
+            //WindowState = FormWindowState.Maximized;
+            //FormBorderStyle = FormBorderStyle.FixedSingle;
             Map = new Map(3, "images\\greenCell.png", Controls);
             Controle.Map = Map;
             
@@ -29,15 +29,14 @@ namespace ProjectGame
                 (skeleton, new Point(0, 0))
             });
         }
-        
+
+        public void WWWAAAGH(EventArgs e)
+        {
+            Console.WriteLine("eee");
+        }
         protected override void OnPaint(PaintEventArgs e)
         {
             View.PaintMap(Map, e);
-        }
-
-        public void ClickOnMap()
-        {
-            
         }
     }
 }

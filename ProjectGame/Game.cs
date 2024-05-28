@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Net.Mime;
 using System.Windows.Forms;
 
 namespace ProjectGame
@@ -12,26 +13,31 @@ namespace ProjectGame
         private View visualiser;
         private Control.ControlCollection Controls;
         private PictureBox endTurnButton;
+        private InfoPanel infoPanel;
         public Game(Control.ControlCollection controls)
         {
             Controls = controls;
             visualiser = new View();
             chosenElement = new object();
+            map = new Map(9, "images\\greenCell.png", Controls);
+            endTurnButton = CreateEndButton();
+            infoPanel = CreateInfoPanel();
             
-            map = new Map(7, "images\\greenCell.png", Controls);
-            endTurnButton = EndButtonCreate();
             var knight1 = new Knight(2, 2, "knight");
             var skeleton = new Sceleton(4, 2, "skeleton");
+            //var castle = new Castle(20, "castle");
             map.SpawnEntity(new (IEntity, Point)[]
             {
-                (knight1, new Point(1, 1)),
-                (skeleton, new Point(0, 0))
+                (knight1, new Point(0, 4)),
+                (skeleton, new Point(5, 0)),
+                //(castle, new Point(map.Size/2, map.Size/2))
             });
         }
 
         public void PaintMap(PaintEventArgs e)
         {
             visualiser.PaintMap(map, e);
+            visualiser.DrawInfoPanel(infoPanel, map[0, 0]);
         }
         
         public void SetNewChosenElement(object newChosenElement)
@@ -39,7 +45,11 @@ namespace ProjectGame
             if (newChosenElement is Cell)
             {
                 var GoTo = (Cell)newChosenElement;
-                
+                if (GoTo.Entity != null)
+                {
+                    infoPanel.SetNewInfo(GoTo.Entity);
+                    visualiser.DrawInfoPanel(infoPanel, GoTo);
+                }
                 if (chosenElement != null && chosenElement is Cell)
                 {
                     var GoFrom = (Cell)chosenElement;
@@ -60,17 +70,27 @@ namespace ProjectGame
             visualiser.RedrawCell(map.GetCells().ToArray());
         }
 
-        private PictureBox EndButtonCreate()
+        private PictureBox CreateEndButton()
         {
-            var delta = map[map.Size - 1, 0].WindowPosition;
+            var delta = map[map.Size - 1, map.Size - 1].WindowPosition;
             var endTurnButton = new PictureBox()
             {
                 Image = Image.FromFile("images\\endTurnButton.png"),
-                Location = new Point(delta.X + 100, delta.Y + 0)
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Size = new Size(200, 200),
+                Location = new Point(delta.X +300, delta.Y - 100)
             }; 
             endTurnButton.Click += EndTurn;
             Controls.Add(endTurnButton);
             return endTurnButton;
+        }
+
+        private InfoPanel CreateInfoPanel()
+        {
+            var delta = map[map.Size - 1, 0].WindowPosition;
+            var ip = new InfoPanel(new Rectangle(delta.X + 200, delta.Y, 400, 700));
+            Controls.Add(ip.TextLabel);
+            return ip;
         }
     }
 }

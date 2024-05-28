@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ArgumentException = System.ArgumentException;
 
@@ -15,6 +16,8 @@ namespace ProjectGame
         private List<Sceleton> foeArray;
         public readonly int Size;
         private List<IEntity> entityList;
+        private List<Cell> GravePositions;
+        private Cell CastlePosition;
         public Map(int size, string img, Control.ControlCollection Controls)
         {
             allyArray = new List<IEntity>();
@@ -36,6 +39,20 @@ namespace ProjectGame
                 else dx -= 65;
                 dy += 100;
             }
+
+            var buildings = new List<(IEntity, Point)>
+            {
+                (new Castle(20, "castle"), new Point(Size / 2, Size / 2))
+            };
+            CastlePosition = matrix[Size / 2, Size / 2];
+            GravePositions = new List<Cell>();
+            foreach (var gravePoint in new Point[]
+                         {new Point(0, 0), new Point(0, Size-1), new Point(Size-1, 0), new Point(Size-1, Size-1)})
+            {
+                buildings.Add((new Grave("grave"),gravePoint));
+                GravePositions.Add(matrix[gravePoint.X, gravePoint.Y]);
+            }
+            SpawnEntity(buildings.ToArray());
         }
 
         public Cell this[int x, int y]
@@ -167,28 +184,64 @@ namespace ProjectGame
             foreach (var foe in foeArray)
             {
                 foe.SetActive();
-                var closestPath = GetAdjacentToCell(foe.Cell)
-                    .Select(x => FindClosestAlly(new HashSet<Cell>() { }, x, x, EntityType.Ally, 1)).ToList();
-                if (closestPath.Count() != 0 && closestPath.First().Item2 != Size + 1) 
-                    Move(foe.Cell, closestPath.OrderBy(x => x.Item2).First().Item1);
+                var closestPathToAlly = GetAdjacentToCell(foe.Cell)
+                    .Select(x => FindClosestAlly(x, EntityType.Ally))
+                    .Where(x => x.Item2 != -1)
+                    .ToList();
+                var closestPathToCastle = GetAdjacentToCell(foe.Cell)
+                    .Select(x => FindClosestAlly(x, EntityType.Castle))
+                    .Where(x => x.Item2 != -1)
+                    .ToList();
+
+                if (closestPathToAlly.Count() != 0) closestPathToAlly = closestPathToAlly.OrderBy(x => x.Item2).ToList();
+                
+                if(closestPathToAlly.First().Item2 < 3) Move(foe.Cell, closestPathToAlly.First().Item1);
+                
+                else if(closestPathToCastle.Count() != 0) Move(foe.Cell, closestPathToCastle.OrderBy(x => x.Item2).First().Item1);
                 foe.UnsetActive();
+            }
+            
+            if (((Castle)CastlePosition.Entity).TrySpawn())SpawnReinforcement(
+                (IEntity)(new Knight(2, 2, "knight")), CastlePosition);
+            SpawnFoe();
+        }
+
+        private (Cell, int) FindClosestAlly(Cell initialCell, EntityType seekingFor)
+        {
+            var visited = new HashSet<Cell>();
+            var queue = new Queue<(Cell, int)>();
+            queue.Enqueue((initialCell, 1));
+            while (queue.Count != 0)
+            {
+                var node = queue.Dequeue();
+                if (visited.Contains(node.Item1)) continue;
+                if (node.Item1.Entity != null && node.Item1.Entity.Type == seekingFor) return (initialCell, node.Item2);
+                visited.Add(node.Item1);
+                foreach (var incidentCell in GetAdjacentToCell(node.Item1))
+                    queue.Enqueue((incidentCell, node.Item2 + 1));
+            }
+            return(initialCell, -1);
+        }
+
+        private void SpawnReinforcement(IEntity entity, Cell spawnFrom)
+        {
+            foreach (var spawnPositions in GetAdjacentToCell(spawnFrom))
+            {
+                if(spawnPositions.Entity == null) 
+                {
+                    SpawnEntity(new []{(entity,
+                    new Point(spawnPositions.MapPosition.X, spawnPositions.MapPosition.Y))});
+                    return;
+                }
             }
         }
 
-        private (Cell, int) FindClosestAlly(HashSet<Cell> visited, Cell currentCell, Cell initialCell, EntityType seekFor, int pathLength)
+        private void SpawnFoe()
         {
-            if (currentCell.Entity != null && currentCell.Entity.Type == seekFor) 
-                return (initialCell, pathLength);
-            visited.Add(currentCell);
-            
-            var adjasentCellsFiltered =  GetAdjacentToCell(currentCell).Where(x => !visited.Contains(x));
-            if (!adjasentCellsFiltered.Any()) return (initialCell, Size + 1);
-            
-            var paths = adjasentCellsFiltered.Select(x => 
-                    FindClosestAlly(visited, x, initialCell, seekFor, pathLength + 1)).ToList();
-            
-            if (paths.Count() != 0) return paths.OrderBy(x => x.Item2).First();
-            return (initialCell, Size + 1);
+            foreach (var gravePosition in GravePositions)
+            {
+                SpawnReinforcement(new Sceleton(4, 2, "skeleton"), gravePosition);
+            }
         }
     }
 }

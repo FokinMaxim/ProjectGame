@@ -87,7 +87,13 @@
       <Content Include="fonts\Grandstander-Light.ttf" />
       <Content Include="fonts\Grandstander.ttf" />
       <Content Include="fonts\GrandstanderNarrow.ttf" />
+      <Content Include="images\castle.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="images\endTurnButton.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="images\grave.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="images\greenCell.png">

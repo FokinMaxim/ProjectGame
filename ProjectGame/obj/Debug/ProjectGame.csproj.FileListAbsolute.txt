@@ -12,3 +12,5 @@ C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\knight.png
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\skeleton.png
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\knightChosen.png
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\endTurnButton.png
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\grave.png
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\castle.png

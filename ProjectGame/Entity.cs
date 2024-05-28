@@ -1,17 +1,19 @@
 using System.Drawing;
 using System.IO;
 using System.Net.Mime;
+using System.Windows.Forms.VisualStyles;
 
 namespace ProjectGame
 {
     public class Knight: IEntity
     {
         public int HealthPoints { get; set; }
-        public int MaxHealth;
+        private int MaxHealth;
         public  int Attack { get; set; }
         public Image Sprite{ get; set; }
-        private int killCount;
-        public string FileName;
+        public int AddAtack{ get; set; }
+        public int killCount;
+        private string FileName;
         private int CurrentActivityPoints;
         private int MaxAtivityPoints;
         public EntityType Type { get; }
@@ -53,7 +55,7 @@ namespace ProjectGame
             killCount += 1;
             if (killCount == 3)
             {
-                killCount = 0;
+                AddAtack += 1;
                 Attack += 2;
                 MaxAtivityPoints += 4;
                 HealthPoints = MaxHealth;
@@ -115,6 +117,101 @@ namespace ProjectGame
         public bool IsActive()
         {
             return ActivityFlag;
+        }
+    }
+
+    public class Castle: IEntity
+    {
+        public int HealthPoints { get; set; }
+        public int Attack { get; set; }
+        public Image Sprite { get; set; }
+        public EntityType Type { get; }
+        public int TurnsToReinforcement{ get; set; }
+        private string FileName;
+
+        public Castle(int health, string img)
+        {
+            HealthPoints = health;
+            Attack = 0;
+            Sprite = Image.FromFile("images\\" + img + ".png");
+            FileName = img;
+            Type = EntityType.Castle;
+        }
+
+        public void SetActive()
+        {
+        }
+
+        public bool TrySpawn()
+        {
+            if (TurnsToReinforcement == 0)
+            {
+                TurnsToReinforcement = 3;
+                return true;
+            }
+
+            TurnsToReinforcement -= 1;
+            return false;
+        }
+        
+        public void SetChosen()
+        {
+            if(!IsActive()) return;
+            var path = "images\\" + FileName + "Chosen.png";
+            if(File.Exists(path))Sprite = Image.FromFile(path);
+            
+        }
+
+        public void UnSetChosen()
+        {
+            Sprite = Image.FromFile("images\\" + FileName + ".png");
+        }
+        public void RiseKillCount(){}
+
+        public bool IsActive()
+        {
+            return false;
+        }
+    }
+    
+    public class Grave: IEntity
+    {
+        public int HealthPoints { get; set; }
+        public int Attack { get; set; }
+        public Image Sprite { get; set; }
+        public EntityType Type { get; }
+        public int TurnsToReinforcement{ get; set; }
+        private string FileName;
+
+        public Grave(string img)
+        {
+            HealthPoints = 0;
+            Attack = 0;
+            Sprite = Image.FromFile("images\\" + img + ".png");
+            FileName = img;
+            Type = EntityType.Grave;
+        }
+
+        public void SetActive()
+        {
+        }
+        public void SetChosen()
+        {
+            if(!IsActive()) return;
+            var path = "images\\" + FileName + "Chosen.png";
+            if(File.Exists(path))Sprite = Image.FromFile(path);
+            
+        }
+
+        public void UnSetChosen()
+        {
+            Sprite = Image.FromFile("images\\" + FileName + ".png");
+        }
+        public void RiseKillCount(){}
+
+        public bool IsActive()
+        {
+            return false;
         }
     }
 }

@@ -1,4 +1,6 @@
 using System.Drawing;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using static System.Math;
 
@@ -54,14 +56,41 @@ namespace ProjectGame
         public void DrawEntity(Graphics gr, Cell cell, Point delta)
         {
             gr.DrawImage(cell.Entity.Sprite, new Point(delta.X, delta.Y));
+            if (cell.Entity.HealthPoints > 0)
+            {
+                var fontFamily = new FontFamily("Arial");
+                var font = new Font(fontFamily, 28, FontStyle.Bold, GraphicsUnit.Pixel);
+                            
+                gr.DrawString(cell.Entity.HealthPoints.ToString(), 
+                    font, new SolidBrush(Color.Red), new PointF(
+                        (float)delta.X + cell.Entity.Sprite.Size.Height, 
+                        (float)delta.Y + cell.Entity.Sprite.Size.Width));
+            }
+        }
+
+        public void DrawInfoPanel(InfoPanel infoPanel, Cell cell)
+        {
+            var gr = cell.Box.FindForm().CreateGraphics();
+            gr.FillRectangle(new SolidBrush(Color.Moccasin), infoPanel.FonRectangle);
+            if (infoPanel.Info == null)
+            {
+             infoPanel.TextLabel.Text = "Защищайте замок. С крраёв карты его будут атаковать враги. " +
+                                                    "Вам надо продержаться 20 ходов.";   
+            }
+            else
+            {
+                var info = infoPanel.Info;
+                var stringBuilder = new StringBuilder();
+                foreach (var property in info.GetType().GetProperties())
+                {
+                    if (property.GetValue(info) != null) stringBuilder.Append(
+                        property.GetCustomAttributes(true).OfType<PropertyNameAttribute>().First().Description
+                        + property.GetValue(info).ToString() + "\n");
+                }
+
+                infoPanel.TextLabel.Text = stringBuilder.ToString();
+            }
             
-            var fontFamily = new FontFamily("Arial");
-            var font = new Font(fontFamily, 28, FontStyle.Bold, GraphicsUnit.Pixel);
-            
-            gr.DrawString(cell.Entity.HealthPoints.ToString(), 
-                font, new SolidBrush(Color.Red), new PointF(
-                    (float)delta.X + cell.Entity.Sprite.Size.Height, 
-                    (float)delta.Y + cell.Entity.Sprite.Size.Width));
         }
     }
 }

@@ -197,11 +197,12 @@ namespace ProjectGame
                     .Where(x => x.Item2 != -1)
                     .ToList();
 
-                if (closestPathToAlly.Count() != 0) closestPathToAlly = closestPathToAlly.OrderBy(x => x.Item2).ToList();
-                
-                if(closestPathToAlly.First().Item2 < 3) Move(foe.Cell, closestPathToAlly.First().Item1);
-                
-                else if(closestPathToCastle.Count() != 0) Move(foe.Cell, closestPathToCastle.OrderBy(x => x.Item2).First().Item1);
+                if (closestPathToAlly.Count() != 0)
+                {
+                    closestPathToAlly = closestPathToAlly.OrderBy(x => x.Item2).ToList();
+                    if(closestPathToAlly.First().Item2 < 3) Move(foe.Cell, closestPathToAlly.First().Item1);
+                    else if(closestPathToCastle.Count() != 0) Move(foe.Cell, closestPathToCastle.OrderBy(x => x.Item2).First().Item1);
+                }
                 foe.UnsetActive();
 
                 if (CastlePosition.Entity == null)

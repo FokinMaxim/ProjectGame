@@ -19,13 +19,13 @@ namespace ProjectGame
         public EntityType Type { get; }
 
 
-        public Knight(int health, int attack, string img)
+        public Knight(string img)
         {
             Type = EntityType.Ally;
             MaxAtivityPoints = 3;
             CurrentActivityPoints = MaxAtivityPoints;
-            HealthPoints = MaxHealth = health;
-            Attack = attack;
+            HealthPoints = MaxHealth = 10;
+            Attack = 5;
             Sprite = Image.FromFile("images\\" + img + ".png");
             killCount = 0;
             FileName = img;
@@ -35,7 +35,6 @@ namespace ProjectGame
         {
             CurrentActivityPoints = MaxAtivityPoints;
         }
-        
 
         public void SetChosen()
         {
@@ -87,11 +86,11 @@ namespace ProjectGame
         private bool ActivityFlag;
         public string FileName;
 
-        public Sceleton(int health, int attack, string img)
+        public Sceleton(string img)
         {
             Type = EntityType.Foe;
-            HealthPoints = MaxHealth = health;
-            Attack = attack;
+            HealthPoints = MaxHealth = 10;
+            Attack = 2;
             Sprite = Image.FromFile("images\\" + img + ".png");
             FileName = img;
         }
@@ -136,6 +135,7 @@ namespace ProjectGame
             Sprite = Image.FromFile("images\\" + img + ".png");
             FileName = img;
             Type = EntityType.Castle;
+            TurnsToReinforcement = 3;
         }
 
         public void SetActive()
@@ -144,7 +144,7 @@ namespace ProjectGame
 
         public bool TrySpawn()
         {
-            if (TurnsToReinforcement == 0)
+            if (TurnsToReinforcement == 1)
             {
                 TurnsToReinforcement = 3;
                 return true;

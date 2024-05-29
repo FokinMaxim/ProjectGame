@@ -23,14 +23,10 @@ namespace ProjectGame
             endTurnButton = CreateEndButton();
             infoPanel = CreateInfoPanel();
             
-            var knight1 = new Knight(2, 2, "knight");
-            var skeleton = new Sceleton(4, 2, "skeleton");
-            //var castle = new Castle(20, "castle");
+            var knight1 = new Knight("knight");
             map.SpawnEntity(new (IEntity, Point)[]
             {
-                (knight1, new Point(0, 4)),
-                (skeleton, new Point(5, 0)),
-                //(castle, new Point(map.Size/2, map.Size/2))
+                (knight1, new Point(map.Size/2 -1, map.Size/2 -1)),
             });
         }
 
@@ -65,9 +61,9 @@ namespace ProjectGame
 
         private void EndTurn(object sender, EventArgs e)
         {
-            Console.WriteLine("EEE");
             map.EndTurn();
             visualiser.RedrawCell(map.GetCells().ToArray());
+            if(map.isEndGame) visualiser.SetEndGameInfo(infoPanel, map.IsWinning());
         }
 
         private PictureBox CreateEndButton()
@@ -92,5 +88,6 @@ namespace ProjectGame
             Controls.Add(ip.TextLabel);
             return ip;
         }
+        
     }
 }

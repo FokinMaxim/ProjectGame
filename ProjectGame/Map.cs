@@ -18,8 +18,13 @@ namespace ProjectGame
         private List<IEntity> entityList;
         private List<Cell> GravePositions;
         private Cell CastlePosition;
+        public bool isEndGame;
+        private int turnsToWin;
+        
         public Map(int size, string img, Control.ControlCollection Controls)
         {
+            isEndGame = false;
+            turnsToWin = 25;
             allyArray = new List<IEntity>();
             foeArray = new List<Sceleton>();
             matrix = new Cell[size, size];
@@ -93,22 +98,20 @@ namespace ProjectGame
         {
             if (Dealer.Entity == null || Reciwer.Entity == null) throw new ArgumentException();
             if (Dealer.Entity.Type == Reciwer.Entity.Type) return;
-            {
-                
-            }
+            var dealerAttack = Dealer.Entity.Attack + GetAdditionalAttack(Dealer);
             if (Dealer.Entity is Knight)
             {
                 var knight = (Knight)Dealer.Entity;
                 knight.DoBigAction();
             }
-            if (Reciwer.Entity.HealthPoints - Dealer.Entity.Attack <= 0)
+            if (Reciwer.Entity.HealthPoints - dealerAttack <= 0)
             {
                 Dealer.Entity.RiseKillCount();
                 Reciwer.Entity = null;
             }
             else
             {
-                Reciwer.Entity.HealthPoints -= Dealer.Entity.Attack;
+                Reciwer.Entity.HealthPoints -= dealerAttack;
                 Dealer.Entity.HealthPoints -= Reciwer.Entity.Attack;
                 if (Dealer.Entity.HealthPoints <= 0)
                 {
@@ -175,6 +178,7 @@ namespace ProjectGame
 
         public void EndTurn()
         {
+            if(isEndGame) return;
             foreach (var ally in allyArray)
             {
                 ally.UnSetChosen();
@@ -199,11 +203,23 @@ namespace ProjectGame
                 
                 else if(closestPathToCastle.Count() != 0) Move(foe.Cell, closestPathToCastle.OrderBy(x => x.Item2).First().Item1);
                 foe.UnsetActive();
+
+                if (CastlePosition.Entity == null)
+                {
+                    EndGame();
+                    return;
+                }
             }
             
             if (((Castle)CastlePosition.Entity).TrySpawn())SpawnReinforcement(
-                (IEntity)(new Knight(2, 2, "knight")), CastlePosition);
+                (IEntity)(new Knight("knight")), CastlePosition);
             SpawnFoe();
+
+            turnsToWin -= 1;
+            if (turnsToWin == 0)
+            {
+                EndGame();
+            }
         }
 
         private (Cell, int) FindClosestAlly(Cell initialCell, EntityType seekingFor)
@@ -225,7 +241,9 @@ namespace ProjectGame
 
         private void SpawnReinforcement(IEntity entity, Cell spawnFrom)
         {
-            foreach (var spawnPositions in GetAdjacentToCell(spawnFrom))
+            var random = new Random();
+            var cellList = GetAdjacentToCell(spawnFrom).OrderBy(e => random.NextDouble());
+            foreach (var spawnPositions in cellList)
             {
                 if(spawnPositions.Entity == null) 
                 {
@@ -240,8 +258,27 @@ namespace ProjectGame
         {
             foreach (var gravePosition in GravePositions)
             {
-                SpawnReinforcement(new Sceleton(4, 2, "skeleton"), gravePosition);
+                SpawnReinforcement(new Sceleton("skeleton"), gravePosition);
             }
         }
+
+        private void EndGame()
+        {
+            isEndGame = true;
+            foreach (var cell in matrix)
+            {
+                cell.Box.Visible = false;
+            }
+        }
+
+        private int GetAdditionalAttack(Cell cell)
+        {
+            return GetAdjacentToCell(cell)
+                .Where(x => (x.Entity != null && x.Entity.Type == EntityType.Ally))
+                .Count();
+        }
+
+        public bool IsWinning() => (CastlePosition.Entity != null);
+        
     }
 }

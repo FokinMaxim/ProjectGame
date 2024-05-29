@@ -64,7 +64,7 @@ namespace ProjectGame
                 gr.DrawString(cell.Entity.HealthPoints.ToString(), 
                     font, new SolidBrush(Color.Red), new PointF(
                         (float)delta.X + cell.Entity.Sprite.Size.Height, 
-                        (float)delta.Y + cell.Entity.Sprite.Size.Width));
+                        (float)delta.Y + cell.Entity.Sprite.Size.Width - 20));
             }
         }
 
@@ -74,8 +74,8 @@ namespace ProjectGame
             gr.FillRectangle(new SolidBrush(Color.Moccasin), infoPanel.FonRectangle);
             if (infoPanel.Info == null)
             {
-             infoPanel.TextLabel.Text = "Защищайте замок. С крраёв карты его будут атаковать враги. " +
-                                                    "Вам надо продержаться 20 ходов.";   
+             infoPanel.TextLabel.Text = "Защищайте замок. С краёв карты его будут атаковать враги. " +
+                                                    "Вам надо продержаться 25 ходов.";   
             }
             else
             {
@@ -90,7 +90,12 @@ namespace ProjectGame
 
                 infoPanel.TextLabel.Text = stringBuilder.ToString();
             }
-            
+        }
+
+        public void SetEndGameInfo(InfoPanel infoPanel, bool winFlag)
+        {
+            if (winFlag) infoPanel.TextLabel.Text = "ПОЗДРАВЛЯЕМ!!! ВЫ ПРОИГРАЛИ.";
+            else infoPanel.TextLabel.Text = "ВЫ ПРОИГРАЛИ.";
         }
     }
 }

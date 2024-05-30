@@ -14,3 +14,7 @@ C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\knightChose
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\endTurnButton.png
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\grave.png
 C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\castle.png
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\archer.png
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\archerChosen.png
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\rider.png
+C:\Users\User\RiderProjects\ProjectGame\ProjectGame\bin\Debug\images\riderChosen.png

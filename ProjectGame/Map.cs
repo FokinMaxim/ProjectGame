@@ -102,12 +102,13 @@ namespace ProjectGame
             if (Dealer.Entity.Type == Reciwer.Entity.Type) return;
             if (Dealer.Entity.Type == EntityType.Ally && Dealer.Entity.Type == EntityType.Castle) return;
             if (Reciwer.Entity.Type == EntityType.Grave) return;
+            if (Dealer.Entity is IPlayable && Reciwer.Entity is IPlayable) return;
             
-            var dealerAttack = Dealer.Entity.Attack + GetAdditionalKnightAttack(Dealer);
-            if (Dealer.Entity is Knight)
+            var dealerAttack = Dealer.Entity.Attack + GetAdditionDealerAttack(Dealer);
+            if (Dealer.Entity is IPlayable)
             {
-                var knight = (Knight)Dealer.Entity;
-                knight.DoBigAction();
+                var pleable = (IPlayable)Dealer.Entity;
+                pleable.DoBigAction();
             }
             if (Reciwer.Entity.HealthPoints - dealerAttack <= 0)
             {
@@ -143,10 +144,10 @@ namespace ProjectGame
             if(To.Entity != null) DealDamage(From, To);
             else
             {
-                if (From.Entity is Knight)
+                if (From.Entity is IPlayable)
                 {
-                    var knight = (Knight)From.Entity;
-                    knight.DoSmallAction();
+                    var pleable = (IPlayable)From.Entity;
+                    pleable.DoSmallAction();
                 }
 
                 if (From.Entity.Type == EntityType.Foe)
@@ -227,7 +228,7 @@ namespace ProjectGame
             }
             
             if (((Castle)castlePosition.Entity).TrySpawn())SpawnReinforcement(
-                (IEntity)(new Knight()), castlePosition);
+                GetRandomAlly(), castlePosition);
             SpawnFoe();
 
             TurnsToWin -= 1;
@@ -287,16 +288,34 @@ namespace ProjectGame
             }
         }
 
+        private int GetAdditionDealerAttack(Cell cell)
+        {
+            if (cell.Entity is Knight) return GetAdditionalKnightAttack(cell);
+            if (cell.Entity is Rider) return GetAdditionalRiderAttack(cell);
+            return 0;
+        }
+
         private int GetAdditionalKnightAttack(Cell cell)
         {
-            if (!(cell.Entity is Knight)) return 0;
             var knight = (Knight)cell.Entity;
             return GetAdjacentToCell(cell)
                 .Where(x => (x.Entity != null && x.Entity.Type == EntityType.Ally))
                 .Count() * knight.AddAttack;
         }
+        
+        private int GetAdditionalRiderAttack(Cell cell)
+        {
+            var rider = (Rider)cell.Entity;
+            return rider.GetAdditionalAttack;
+        }
 
         public bool IsWinning() => (castlePosition.Entity != null);
-        
+
+        private IPlayable GetRandomAlly()
+        {
+            var rnd = new Random();
+            var allyList = new IPlayable[] {new Knight(), new Rider() };
+            return allyList.OrderBy(x => rnd.Next()).First();
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace ProjectGame
         public Knight()
         {
             Type = EntityType.Ally;
-            MaxAtivityPoints = 3;
+            MaxAtivityPoints = Constants.knightActivityPoints;
             CurrentActivityPoints = MaxAtivityPoints;
             HealthPoints = MaxHealth = Constants.knightHealth;
             Attack = Constants.knightAttack;
@@ -94,15 +94,107 @@ namespace ProjectGame
             newInfo.Information = @"Получает плюс " + AddAttack +
                                   " к атаке за каждого союзника по соседству, когда нападает на врага." +
                                   "Если ничего не делает за ход, восстанавливает 3 очка здоровья." +
-                                  "Каждые 3 убийства полностью излечивается и увеличивает урон.";
+                                  "После первых 3 убийств полностью излечивается и увеличивает урон.";
             return newInfo;
         }
     }
 
+
+
+    public class Rider :IPlayable // Буду честен, на разработку каваллериста я потратил примерно 20 минут и скорее всего где-то накосячил, но не смог удержаться от его добавления
+    {
+        public int HealthPoints { get; set; }
+        private int MaxHealth;
+        public  int Attack { get; set; }
+        public Image Sprite{ get; set; }
+        private int killCount;
+        private string FileName;
+        private int CurrentActivityPoints;
+        private int MaxAtivityPoints;
+        public EntityType Type { get; }
+
+
+        public Rider()
+        {
+            Type = EntityType.Ally;
+            MaxAtivityPoints = Constants.riderActivityPoints;
+            CurrentActivityPoints = MaxAtivityPoints;
+            HealthPoints = MaxHealth = Constants.riderHealth;
+            Attack = Constants.riderAttack;
+            Sprite = Image.FromFile("images\\rider.png");
+            killCount = 0;
+            FileName = "rider";
+        }
+
+        public void SetActive()
+        {
+            CurrentActivityPoints = MaxAtivityPoints;
+        }
+
+        public void SetChosen()
+        {
+            if(!IsActive()) return;
+            var path = "images\\" + FileName + "Chosen.png";
+            if(File.Exists(path))Sprite = Image.FromFile(path);
+        }
+        
+        public void UnSetChosen()
+        {
+            Sprite = Image.FromFile("images\\" + FileName + ".png");
+        }
+
+        
+        public void RiseKillCount()
+        {
+            killCount += 1;
+            if (killCount == 3)
+            {
+                Attack += 2;
+                MaxAtivityPoints += 2;
+                HealthPoints = MaxHealth + 4;
+                MaxHealth += 4;
+            }
+        }
+
+        public void DoSmallAction()
+        {
+            CurrentActivityPoints -= 1;
+        }
+        
+        public void DoBigAction()
+        {
+            CurrentActivityPoints = 0;
+        }
+
+        public void TryHeal()
+        {
+            if (CurrentActivityPoints == MaxAtivityPoints) HealthPoints = Math.Min(HealthPoints + 3, MaxHealth);
+        }
+
+        public bool IsActive() => CurrentActivityPoints > 0;
+
+        public int GetAdditionalAttack => MaxHealth - CurrentActivityPoints;
+
+        public EntityInfo GetInfo()
+        {
+            var newInfo = new EntityInfo();
+            
+            newInfo.Name = "Каваллерист";
+            newInfo.Kills = killCount.ToString();
+            newInfo.Attack = Attack.ToString();
+            newInfo.HealthPoints = HealthPoints.ToString();
+            newInfo.ActivityPoints = CurrentActivityPoints.ToString();
+            newInfo.Attack = Attack.ToString();
+            newInfo.Information = @"Очень быстрый атакующий юнит. Получает плюс 1 к атаке за каждую пройденную на ходу клетку" + 
+                                  "Если ничего не делает за ход, восстанавливает 3 очка здоровья." +
+                                  "После первых 3 убийств полностью излечивается и увеличивает урон.";
+            return newInfo;
+        }
+    }
+    
     public class Skeleton : IEntity
     {
         public int HealthPoints { get; set; }
-        public int MaxHealth;
         public  int Attack { get; set; }
         public Image Sprite{ get; set; }
         public EntityType Type { get; }
@@ -112,7 +204,7 @@ namespace ProjectGame
         public Skeleton()
         {
             Type = EntityType.Foe;
-            HealthPoints = MaxHealth = Constants.sceletonHealth;
+            HealthPoints = Constants.sceletonHealth;
             Attack = Constants.sceletonAttack;
             Sprite = Image.FromFile("images\\skeleton.png");
         }
@@ -164,6 +256,8 @@ namespace ProjectGame
         public void SetActive()
         {
         }
+        public void DoSmallAction(){}
+        public void DoBigAction(){}
         public void RiseKillCount(){}
         public bool TrySpawn()
         {

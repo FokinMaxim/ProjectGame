@@ -88,6 +88,12 @@
       <Content Include="fonts\Grandstander-Light.ttf" />
       <Content Include="fonts\Grandstander.ttf" />
       <Content Include="fonts\GrandstanderNarrow.ttf" />
+      <Content Include="images\archer.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="images\archerChosen.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="images\castle.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
@@ -104,6 +110,12 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="images\knightChosen.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="images\rider.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="images\riderChosen.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="images\skeleton.png">

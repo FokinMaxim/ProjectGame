@@ -23,6 +23,8 @@ namespace ProjectGame
          void SetChosen();
          void UnSetChosen();
          void TryHeal();
+         void DoSmallAction();
+         void DoBigAction();
          void RiseKillCount();
     }
     
@@ -34,7 +36,7 @@ namespace ProjectGame
         Grave
     }
 
-    public class EntityInfo
+    public class EntityInfo // Рефлексия - это вещь
     {
         [PropertyName("Тип: ")]
         public string Name { get; set; }

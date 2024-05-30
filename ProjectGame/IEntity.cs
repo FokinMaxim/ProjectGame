@@ -11,12 +11,19 @@ namespace ProjectGame
         int Attack { get; set; }
         Image Sprite { get; set; }
         EntityType Type { get; }
+
         
         void SetActive();
-        void SetChosen();
-        void UnSetChosen();
-        void RiseKillCount();
         bool IsActive();
+        EntityInfo GetInfo();
+    }
+
+    public interface IPlayable : IEntity
+    {
+         void SetChosen();
+         void UnSetChosen();
+         void TryHeal();
+         void RiseKillCount();
     }
     
     public enum EntityType
@@ -32,13 +39,16 @@ namespace ProjectGame
         [PropertyName("Тип: ")]
         public string Name { get; set; }
         [PropertyName("Очки Здоровья: ")]
-        public int HealthPoints { get; set; }
+        public string HealthPoints { get; set; }
         [PropertyName("Атака: ")]
-        public int Attack { get; set; }
+        public string Attack { get; set; }
+        [PropertyName("Очки активности: ")]
+        public string ActivityPoints { get; set; }
+        
         [PropertyName("Ходов до подкрепления: ")]
-        public int TurnsToReinforcement { get; set; }
+        public string TurnsToReinforcement { get; set; }
         [PropertyName("Убийства: ")]
-        public int Kills { get; set; }
+        public string Kills { get; set; }
         [PropertyName("Информация и способности: ")]
         public string Information { get; set; }
     }

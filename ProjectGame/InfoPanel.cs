@@ -9,7 +9,7 @@ namespace ProjectGame
     {
         public Rectangle FonRectangle;
         public EntityInfo Info;
-        public System.Windows.Forms.Label TextLabel;
+        public readonly Label TextLabel;
 
         public InfoPanel(Rectangle rectangle)
         {
@@ -23,32 +23,7 @@ namespace ProjectGame
 
         public void SetNewInfo(IEntity entity)
         {
-            var newInfo = new EntityInfo();
-
-            newInfo.HealthPoints = entity.HealthPoints;
-
-            if (entity is Knight)
-            {
-                var knight = (Knight)entity;
-
-                newInfo.Kills = 3 - knight.killCount;
-                newInfo.Attack = knight.Attack;
-                newInfo.Name = "Рыцарь";
-                newInfo.Information = @"Получает плюс " + knight.AddAtack +
-                                      " к атаке за каждого союзника по соседству, когда нападает на врага." +
-                                      "Каждые 3 убийства полностью излечивается и увеличивает урон";
-            }
-
-            if (entity is Castle)
-            {
-                var castle = (Castle)entity;
-
-                newInfo.Name = "Замок";
-                newInfo.TurnsToReinforcement = castle.TurnsToReinforcement;
-                newInfo.Information = @"Каждые 3 хода призывает нового союзника на соседнюю с ним клетку. Если Замок разрушат, вы проиграете ";
-            }
-
-            Info = newInfo;
+            Info = entity.GetInfo();
         }
     }
 }

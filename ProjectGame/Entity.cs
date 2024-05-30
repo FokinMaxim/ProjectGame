@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using System.IO;
 using System.Net.Mime;
@@ -5,30 +6,31 @@ using System.Windows.Forms.VisualStyles;
 
 namespace ProjectGame
 {
-    public class Knight: IEntity
+    public class Knight: IPlayable
     {
         public int HealthPoints { get; set; }
         private int MaxHealth;
         public  int Attack { get; set; }
         public Image Sprite{ get; set; }
-        public int AddAtack{ get; set; }
-        public int killCount;
+        public int AddAttack{ get; set; }
+        private int killCount;
         private string FileName;
         private int CurrentActivityPoints;
         private int MaxAtivityPoints;
         public EntityType Type { get; }
 
 
-        public Knight(string img)
+        public Knight()
         {
             Type = EntityType.Ally;
             MaxAtivityPoints = 3;
             CurrentActivityPoints = MaxAtivityPoints;
-            HealthPoints = MaxHealth = 10;
-            Attack = 5;
-            Sprite = Image.FromFile("images\\" + img + ".png");
+            HealthPoints = MaxHealth = Constants.knightHealth;
+            Attack = Constants.knightAttack;
+            AddAttack = Constants.knightAdditionalAttack;
+            Sprite = Image.FromFile("images\\knight.png");
             killCount = 0;
-            FileName = img;
+            FileName = "knight";
         }
 
         public void SetActive()
@@ -54,11 +56,11 @@ namespace ProjectGame
             killCount += 1;
             if (killCount == 3)
             {
-                AddAtack += 1;
+                AddAttack += 1;
                 Attack += 2;
-                MaxAtivityPoints += 4;
-                HealthPoints = MaxHealth;
                 MaxAtivityPoints += 1;
+                HealthPoints = MaxHealth + 4;
+                MaxHealth += 4;
             }
         }
 
@@ -72,10 +74,32 @@ namespace ProjectGame
             CurrentActivityPoints = 0;
         }
 
-        public bool IsActive() => (CurrentActivityPoints > 0);
+        public void TryHeal()
+        {
+            if (CurrentActivityPoints == MaxAtivityPoints) HealthPoints = Math.Min(HealthPoints + 3, MaxHealth);
+        }
+
+        public bool IsActive() => CurrentActivityPoints > 0;
+
+        public EntityInfo GetInfo()
+        {
+            var newInfo = new EntityInfo();
+            
+            newInfo.Name = "Рыцарь";
+            newInfo.Kills = (3 - killCount).ToString();
+            newInfo.Attack = Attack.ToString();
+            newInfo.HealthPoints = HealthPoints.ToString();
+            newInfo.ActivityPoints = CurrentActivityPoints.ToString();
+            newInfo.Attack = Attack.ToString();
+            newInfo.Information = @"Получает плюс " + AddAttack +
+                                  " к атаке за каждого союзника по соседству, когда нападает на врага." +
+                                  "Если ничего не делает за ход, восстанавливает 3 очка здоровья." +
+                                  "Каждые 3 убийства полностью излечивается и увеличивает урон.";
+            return newInfo;
+        }
     }
 
-    public class Sceleton : IEntity
+    public class Skeleton : IEntity
     {
         public int HealthPoints { get; set; }
         public int MaxHealth;
@@ -84,15 +108,13 @@ namespace ProjectGame
         public EntityType Type { get; }
         public Cell Cell { set; get; }
         private bool ActivityFlag;
-        public string FileName;
 
-        public Sceleton(string img)
+        public Skeleton()
         {
             Type = EntityType.Foe;
-            HealthPoints = MaxHealth = 10;
-            Attack = 2;
-            Sprite = Image.FromFile("images\\" + img + ".png");
-            FileName = img;
+            HealthPoints = MaxHealth = Constants.sceletonHealth;
+            Attack = Constants.sceletonAttack;
+            Sprite = Image.FromFile("images\\skeleton.png");
         }
 
         public void SetActive()
@@ -103,37 +125,38 @@ namespace ProjectGame
         {
             ActivityFlag = false;
         }
-
-        public void SetChosen()
-        { }
-
-        public void UnSetChosen()
-        { }
-
-        public void RiseKillCount()
-        { }
-
+        
         public bool IsActive()
         {
             return ActivityFlag;
         }
+
+        public EntityInfo GetInfo()
+        {
+            var newInfo = new EntityInfo();
+            
+            newInfo.Attack = Attack.ToString();
+            newInfo.Name = "Скелет";
+            newInfo.Information = @"Этот враг пытается унечтожить ваш замок";
+            return newInfo;
+        }
     }
 
-    public class Castle: IEntity
+    public class Castle: IPlayable
     {
         public int HealthPoints { get; set; }
         public int Attack { get; set; }
         public Image Sprite { get; set; }
         public EntityType Type { get; }
-        public int TurnsToReinforcement{ get; set; }
+        private int TurnsToReinforcement{ get; set; }
         private string FileName;
 
-        public Castle(int health, string img)
+        public Castle()
         {
-            HealthPoints = health;
+            HealthPoints = Constants.castleHealth;
             Attack = 0;
-            Sprite = Image.FromFile("images\\" + img + ".png");
-            FileName = img;
+            Sprite = Image.FromFile("images\\castle.png");
+            FileName = "castle";
             Type = EntityType.Castle;
             TurnsToReinforcement = 3;
         }
@@ -141,7 +164,7 @@ namespace ProjectGame
         public void SetActive()
         {
         }
-
+        public void RiseKillCount(){}
         public bool TrySpawn()
         {
             if (TurnsToReinforcement == 1)
@@ -161,16 +184,26 @@ namespace ProjectGame
             if(File.Exists(path))Sprite = Image.FromFile(path);
             
         }
+        
+        public void TryHeal(){}
 
         public void UnSetChosen()
         {
             Sprite = Image.FromFile("images\\" + FileName + ".png");
         }
-        public void RiseKillCount(){}
 
         public bool IsActive()
         {
             return false;
+        }
+        public EntityInfo GetInfo()
+        {
+            var newInfo = new EntityInfo();
+            
+            newInfo.Name = "Замок";
+            newInfo.TurnsToReinforcement = TurnsToReinforcement.ToString();
+            newInfo.Information = @"Каждые 3 хода призывает нового союзника на соседнюю с ним клетку. Если Замок разрушат, вы проиграете.";
+            return newInfo;
         }
     }
     
@@ -180,38 +213,46 @@ namespace ProjectGame
         public int Attack { get; set; }
         public Image Sprite { get; set; }
         public EntityType Type { get; }
-        public int TurnsToReinforcement{ get; set; }
+        private int TurnsToStartSpawning{ get; set; }
+        
         private string FileName;
 
-        public Grave(string img)
+        public Grave(int turnsToStartSpawning)
         {
+            TurnsToStartSpawning = turnsToStartSpawning;
             HealthPoints = 0;
             Attack = 0;
-            Sprite = Image.FromFile("images\\" + img + ".png");
-            FileName = img;
+            Sprite = Image.FromFile("images\\grave.png");
+            FileName = "grave";
             Type = EntityType.Grave;
+        }
+
+        public bool CanSpawn()
+        {
+            if (TurnsToStartSpawning == 0) return true;
+            
+            TurnsToStartSpawning -= 1;
+            return false;
         }
 
         public void SetActive()
         {
         }
-        public void SetChosen()
-        {
-            if(!IsActive()) return;
-            var path = "images\\" + FileName + "Chosen.png";
-            if(File.Exists(path))Sprite = Image.FromFile(path);
-            
-        }
-
-        public void UnSetChosen()
-        {
-            Sprite = Image.FromFile("images\\" + FileName + ".png");
-        }
-        public void RiseKillCount(){}
+       
 
         public bool IsActive()
         {
             return false;
+        }
+        public EntityInfo GetInfo()
+        {
+            var newInfo = new EntityInfo();
+            
+            newInfo.Name = "Кладбище";
+            if (TurnsToStartSpawning != 0) newInfo.Information = "Начнёт призывать скелетов через " + TurnsToStartSpawning + " ходов";
+            else newInfo.Information = "Каждый ход призывает нового скелета";
+            
+            return newInfo;
         }
     }
 }

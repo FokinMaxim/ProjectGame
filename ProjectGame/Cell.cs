@@ -30,12 +30,12 @@ namespace ProjectGame
 
         public void SetChosen()
         {
-            if (Entity != null) Entity.SetChosen();
+            if (Entity != null && Entity is IPlayable) ((IPlayable)Entity).SetChosen();
         }
         
         public void UnSetChosen()
         {
-            if (Entity != null) Entity.UnSetChosen();
+            if (Entity != null && Entity is IPlayable)((IPlayable)Entity).UnSetChosen();
         }
         
         private void CheckClicability(object sender, EventArgs e)
@@ -43,7 +43,7 @@ namespace ProjectGame
             Console.WriteLine(MapPosition);
             
             Form myForm = Box.FindForm();
-            if (myForm is Form1) ((Form1)myForm).WWWAAAGH(this);
+            if (myForm is Form1) ((Form1)myForm).TransferSignal(this);
         }
         
     }

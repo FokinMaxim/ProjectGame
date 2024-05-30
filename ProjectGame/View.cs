@@ -68,24 +68,25 @@ namespace ProjectGame
             }
         }
 
-        public void DrawInfoPanel(InfoPanel infoPanel, Cell cell)
+        public void DrawInfoPanel(InfoPanel infoPanel, Cell cell, int turnsTowWn)
         {
             var gr = cell.Box.FindForm().CreateGraphics();
             gr.FillRectangle(new SolidBrush(Color.Moccasin), infoPanel.FonRectangle);
             if (infoPanel.Info == null)
             {
              infoPanel.TextLabel.Text = "Защищайте замок. С краёв карты его будут атаковать враги. " +
-                                                    "Вам надо продержаться 25 ходов.";   
+                                                    "Вам надо продержаться " + turnsTowWn + " ходов.";   
             }
             else
             {
                 var info = infoPanel.Info;
                 var stringBuilder = new StringBuilder();
+                stringBuilder.Append("Ходов для победы: " + turnsTowWn + "\n" + "\n");
                 foreach (var property in info.GetType().GetProperties())
                 {
                     if (property.GetValue(info) != null) stringBuilder.Append(
                         property.GetCustomAttributes(true).OfType<PropertyNameAttribute>().First().Description
-                        + property.GetValue(info).ToString() + "\n");
+                        + property.GetValue(info) + "\n");
                 }
 
                 infoPanel.TextLabel.Text = stringBuilder.ToString();
@@ -94,7 +95,7 @@ namespace ProjectGame
 
         public void SetEndGameInfo(InfoPanel infoPanel, bool winFlag)
         {
-            if (winFlag) infoPanel.TextLabel.Text = "ПОЗДРАВЛЯЕМ!!! ВЫ ПРОИГРАЛИ.";
+            if (winFlag) infoPanel.TextLabel.Text = "ПОЗДРАВЛЯЕМ!!! ВЫ ВЫЙГРАЛИ.";
             else infoPanel.TextLabel.Text = "ВЫ ПРОИГРАЛИ.";
         }
     }

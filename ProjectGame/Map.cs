@@ -12,21 +12,21 @@ namespace ProjectGame
     public class Map
     {
         private Cell[,] matrix;
-        private  List<IEntity> allyArray;
-        private List<Sceleton> foeArray;
+        private  List<IPlayable> allyArray;
+        private List<Skeleton> foeArray;
         public readonly int Size;
         private List<IEntity> entityList;
         private List<Cell> GravePositions;
-        private Cell CastlePosition;
+        private Cell castlePosition;
         public bool isEndGame;
-        private int turnsToWin;
+        public int TurnsToWin;
         
         public Map(int size, string img, Control.ControlCollection Controls)
         {
             isEndGame = false;
-            turnsToWin = 25;
-            allyArray = new List<IEntity>();
-            foeArray = new List<Sceleton>();
+            TurnsToWin = Constants.TurnsToWin;
+            allyArray = new List<IPlayable>();
+            foeArray = new List<Skeleton>();
             matrix = new Cell[size, size];
             Size = size;
             var dy = 0;
@@ -35,7 +35,6 @@ namespace ProjectGame
             {
                 for (var i = 0; i < size; i++)
                 {
-                    //var cell = new Cell(i * 130 + dx, dy, Image.FromFile(img), new Point(i, j));
                     var cell = new Cell(i * 130 + dx, dy, Image.FromFile(img), new Point(i, j));
                     matrix[i, j] = cell;
                     Controls.Add(cell.Box);
@@ -47,14 +46,17 @@ namespace ProjectGame
 
             var buildings = new List<(IEntity, Point)>
             {
-                (new Castle(20, "castle"), new Point(Size / 2, Size / 2))
+                (new Castle(), new Point(Size / 2, Size / 2))
             };
-            CastlePosition = matrix[Size / 2, Size / 2];
+            castlePosition = matrix[Size / 2, Size / 2];
             GravePositions = new List<Cell>();
+
+            var helpingInt = 0;
             foreach (var gravePoint in new Point[]
                          {new Point(0, 0), new Point(0, Size-1), new Point(Size-1, 0), new Point(Size-1, Size-1)})
             {
-                buildings.Add((new Grave("grave"),gravePoint));
+                buildings.Add((new Grave(helpingInt * Constants.TurnsToWin/4),gravePoint));
+                helpingInt += 1;
                 GravePositions.Add(matrix[gravePoint.X, gravePoint.Y]);
             }
             SpawnEntity(buildings.ToArray());
@@ -78,7 +80,7 @@ namespace ProjectGame
             new Point(1, 0), new Point(0, 1), new Point(-1, -1),
             new Point(-1, 0), new Point(0, -1), new Point(-1, 1),
         };
-        public IEnumerable<Cell> GetAdjacentToCell(Cell cell)
+        private IEnumerable<Cell> GetAdjacentToCell(Cell cell)
         {
             var template = new Point[] { };
             var pos = cell.MapPosition;
@@ -94,11 +96,14 @@ namespace ProjectGame
             }
         }
 
-        public void DealDamage(Cell Dealer, Cell Reciwer)
+        private void DealDamage(Cell Dealer, Cell Reciwer)
         {
             if (Dealer.Entity == null || Reciwer.Entity == null) throw new ArgumentException();
             if (Dealer.Entity.Type == Reciwer.Entity.Type) return;
-            var dealerAttack = Dealer.Entity.Attack + GetAdditionalAttack(Dealer);
+            if (Dealer.Entity.Type == EntityType.Ally && Dealer.Entity.Type == EntityType.Castle) return;
+            if (Reciwer.Entity.Type == EntityType.Grave) return;
+            
+            var dealerAttack = Dealer.Entity.Attack + GetAdditionalKnightAttack(Dealer);
             if (Dealer.Entity is Knight)
             {
                 var knight = (Knight)Dealer.Entity;
@@ -106,7 +111,11 @@ namespace ProjectGame
             }
             if (Reciwer.Entity.HealthPoints - dealerAttack <= 0)
             {
-                Dealer.Entity.RiseKillCount();
+                if (Dealer.Entity is IPlayable)
+                {
+                    var pleable = (IPlayable)Dealer.Entity;
+                    pleable.RiseKillCount();
+                }
                 Reciwer.Entity = null;
             }
             else
@@ -115,7 +124,11 @@ namespace ProjectGame
                 Dealer.Entity.HealthPoints -= Reciwer.Entity.Attack;
                 if (Dealer.Entity.HealthPoints <= 0)
                 {
-                    Reciwer.Entity.RiseKillCount();
+                    if (Reciwer.Entity is IPlayable)
+                    {
+                        var pleable = (IPlayable)Reciwer.Entity;
+                        pleable.RiseKillCount();
+                    }
                     Dealer.Entity = null; 
                 }
             }
@@ -138,7 +151,7 @@ namespace ProjectGame
 
                 if (From.Entity.Type == EntityType.Foe)
                 {
-                    var skeleton = (Sceleton)From.Entity;
+                    var skeleton = (Skeleton)From.Entity;
                     skeleton.Cell = To;
                 }
                 To.Entity = From.Entity;
@@ -150,11 +163,11 @@ namespace ProjectGame
         {
             foreach (var entity in entityPositions)
             {
-                if (entity.Item1.Type == EntityType.Ally) allyArray.Add(entity.Item1);
+                if (entity.Item1.Type == EntityType.Ally) allyArray.Add((IPlayable)entity.Item1);
                 if (!InBounds(entity.Item2)) throw new ArgumentException();
                 if (entity.Item1.Type == EntityType.Foe)
                 {
-                    var skelet = (Sceleton)entity.Item1;
+                    var skelet = (Skeleton)entity.Item1;
                     skelet.Cell = matrix[entity.Item2.X, entity.Item2.Y];
                     foeArray.Add(skelet);
                 }
@@ -162,8 +175,8 @@ namespace ProjectGame
             }
         }
 
-        public bool IsAdjacent(Cell cell1, Cell cell2) =>  GetAdjacentToCell(cell1).Contains(cell2);
-        public bool InBounds(Point point)
+        private bool IsAdjacent(Cell cell1, Cell cell2) =>  GetAdjacentToCell(cell1).Contains(cell2);
+        private bool InBounds(Point point)
         {
             return ((point.Y < Size && point.Y >= 0) && (point.X < Size && point.X >= 0));
         }
@@ -182,6 +195,7 @@ namespace ProjectGame
             foreach (var ally in allyArray)
             {
                 ally.UnSetChosen();
+                ally.TryHeal();
                 ally.SetActive();
             }
 
@@ -205,19 +219,19 @@ namespace ProjectGame
                 }
                 foe.UnsetActive();
 
-                if (CastlePosition.Entity == null)
+                if (castlePosition.Entity == null)
                 {
                     EndGame();
                     return;
                 }
             }
             
-            if (((Castle)CastlePosition.Entity).TrySpawn())SpawnReinforcement(
-                (IEntity)(new Knight("knight")), CastlePosition);
+            if (((Castle)castlePosition.Entity).TrySpawn())SpawnReinforcement(
+                (IEntity)(new Knight()), castlePosition);
             SpawnFoe();
 
-            turnsToWin -= 1;
-            if (turnsToWin == 0)
+            TurnsToWin -= 1;
+            if (TurnsToWin == 0)
             {
                 EndGame();
             }
@@ -259,7 +273,8 @@ namespace ProjectGame
         {
             foreach (var gravePosition in GravePositions)
             {
-                SpawnReinforcement(new Sceleton("skeleton"), gravePosition);
+                var grave = (Grave)gravePosition.Entity;
+                if(grave.CanSpawn()) SpawnReinforcement(new Skeleton(), gravePosition);
             }
         }
 
@@ -272,14 +287,16 @@ namespace ProjectGame
             }
         }
 
-        private int GetAdditionalAttack(Cell cell)
+        private int GetAdditionalKnightAttack(Cell cell)
         {
+            if (!(cell.Entity is Knight)) return 0;
+            var knight = (Knight)cell.Entity;
             return GetAdjacentToCell(cell)
                 .Where(x => (x.Entity != null && x.Entity.Type == EntityType.Ally))
-                .Count();
+                .Count() * knight.AddAttack;
         }
 
-        public bool IsWinning() => (CastlePosition.Entity != null);
+        public bool IsWinning() => (castlePosition.Entity != null);
         
     }
 }

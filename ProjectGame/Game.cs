@@ -23,17 +23,16 @@ namespace ProjectGame
             endTurnButton = CreateEndButton();
             infoPanel = CreateInfoPanel();
             
-            var knight1 = new Knight("knight");
             map.SpawnEntity(new (IEntity, Point)[]
             {
-                (knight1, new Point(map.Size/2 -1, map.Size/2 -1)),
+                (new Knight(), new Point(map.Size/2 -1, map.Size/2 -1)),
             });
         }
 
         public void PaintMap(PaintEventArgs e)
         {
             visualiser.PaintMap(map, e);
-            visualiser.DrawInfoPanel(infoPanel, map[0, 0]);
+            visualiser.DrawInfoPanel(infoPanel, map[0, 0], map.TurnsToWin);
         }
         
         public void SetNewChosenElement(object newChosenElement)
@@ -44,7 +43,7 @@ namespace ProjectGame
                 if (GoTo.Entity != null)
                 {
                     infoPanel.SetNewInfo(GoTo.Entity);
-                    visualiser.DrawInfoPanel(infoPanel, GoTo);
+                    visualiser.DrawInfoPanel(infoPanel, GoTo, map.TurnsToWin);
                 }
                 if (chosenElement != null && chosenElement is Cell)
                 {

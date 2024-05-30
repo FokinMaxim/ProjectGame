@@ -22,7 +22,7 @@ namespace ProjectGame
             game = new Game(Controls);
         }
 
-        public void WWWAAAGH(object newChosenElement)
+        public void TransferSignal(object newChosenElement)
         {
             game.SetNewChosenElement(newChosenElement);
             
